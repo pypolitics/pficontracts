@@ -134,7 +134,7 @@ def plot_data_to_file(data, hyperlink):
 					),
 				Annotation(
 					showarrow=False,
-					text='<a style="color: rgb(250, 250, 250); font-weight: 100; font-size: 12px;">Data sources: </a><a href="%s">gov.uk/government/publications</a>' % hyperlink, 
+					text='<a style="color: black; font-weight: 100; font-size: 12px;">Data sources: </a><a href="%s">gov.uk/government/publications</a>' % hyperlink, 
 					xref='paper',
 					yref='paper',
 					x=0,
