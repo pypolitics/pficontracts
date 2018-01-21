@@ -1,0 +1,26 @@
+body
+{
+  margin: 0px;
+  padding: 0px;
+  font-family: "Helvetica";
+  font-size: 11pt;
+  font-weight: 300;
+  color: #6c6c6c;
+  background: #636466;
+  background-color: #cccdce;
+}
+
+a.navbar-brand {
+  background: -webkit-linear-gradient(top, #ccccff, #66ffcc);
+  background: linear-gradient(top, #ccccff, #66ffcc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.navbar {
+  font-family: 'Abel';
+}
+
+.plotly-graph-div{
+  margin-top: -20px;
+}
