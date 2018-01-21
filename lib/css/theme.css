@@ -22,5 +22,6 @@ a.navbar-brand {
 }
 
 .plotly-graph-div{
-  margin-top: -20px;
+  height: 92vh;
+  background-color: #ededed;
 }
