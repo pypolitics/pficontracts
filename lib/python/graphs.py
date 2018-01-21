@@ -1,10 +1,12 @@
+import json
+
 # thirdparty libs
 import igraph as ig
 import plotly.offline as offline
 import plotly.plotly as py
 from plotly.graph_objs import *
 
-def plot_data_to_file(data, hyperlink):
+def plot_data_to_file(data, plot_file, hyperlink):
 	"""
 	Plotting library. A 3d scatter graph
 	"""
@@ -36,8 +38,8 @@ def plot_data_to_file(data, hyperlink):
 			node_hovertext.append(node['hovertext'])
 
 		# create a Kamada-Kawai layout
-		layt = G.layout('kk', dim=3)
-		# layt = G.layout(dim=3)
+		layout_type = 'drl_3d'
+		layt = G.layout(layout_type)
 
 		# node co-ordinates
 		Xn = [layt[k][0] for k in range(N)] # x-coordinates of nodes
@@ -110,11 +112,11 @@ def plot_data_to_file(data, hyperlink):
 				zaxis=ZAxis(axis),
 				camera=camera),
 			margin=Margin(
-				l=10,
-				r=10,
-				b=20,
-				t=25,
-				pad=4
+				l=0,
+				r=0,
+				b=0,
+				t=0,
+				pad=0
 			),
 			hovermode='closest',
 			plot_bgcolor='rgba(0,0,0,0)',
@@ -122,16 +124,6 @@ def plot_data_to_file(data, hyperlink):
 			hidesources=True,
 			font=Font(size=14, color="#444"),
 			annotations=Annotations([
-				Annotation(
-					showarrow=False,
-					text='<a style="color: black; font-weight: 200;"><b>Private Finance Initiative and Private Finance 2 projects: 2016 summary data</b></a>',
-					xref='paper',
-					yref='paper',
-					x=0.5,
-					y=1,
-					font=Font(
-						size=18, color="white")
-					),
 				Annotation(
 					showarrow=False,
 					text='<a style="color: black; font-weight: 100; font-size: 12px;">Data sources: </a><a href="%s">gov.uk/government/publications</a>' % hyperlink, 
@@ -146,6 +138,7 @@ def plot_data_to_file(data, hyperlink):
 				)
 
 		data = Data(traces)
-		fig = Figure(data=data, layout=layout)
-		html = offline.plot(fig, auto_open=True)
-		return
+
+		json_data = {'data' : data, 'layout' : layout}
+		with open(plot_file, "w") as f:
+			json.dump(json_data, f)

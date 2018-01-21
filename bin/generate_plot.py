@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import csv, sys
+import csv, sys, shutil
 from fuzzywuzzy import fuzz
 
 sys.path.append('../lib/python')
@@ -9,6 +9,10 @@ from graphs import plot_data_to_file
 # data source
 current_data = '../data/31.03.2016.csv'
 hyperlink = 'https://www.gov.uk/government/publications/private-finance-initiative-and-private-finance-2-projects-2016-summary-data'
+
+# html paths
+html_file = '../index.html'
+plot_file = '../data/plot_data.json'
 
 def make_link(link, nodes, source, target):
     """
@@ -108,7 +112,25 @@ def prepare_plot_data(parsed_data):
 
 	return data
 
+def write_file(html):
+	"""
+	write out the index.html file
+	"""
+
+	# copy the top
+	shutil.copy2(top_html, html_file)
+
+	# insert the plot div
+	with open(html_file, "a") as myfile:
+		myfile.write(html.encode("utf8"))
+
+	# write the tail
+	with open(html_file, "a") as fo:
+		with open(tail_html, 'r') as fi:
+			fo.write(fi.read())
+
 data_dicts = data_to_dict()
 plot_data = prepare_plot_data(data_dicts)
-plot_data_to_file(plot_data, hyperlink)
+html = plot_data_to_file(plot_data, plot_file, hyperlink)
 
+shutil.copy2('../lib/html/index.html', '../index.html')
