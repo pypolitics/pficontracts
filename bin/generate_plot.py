@@ -57,12 +57,25 @@ def prepare_plot_data(parsed_data):
 
 	for d in parsed_data:
 
+		# get the department name
+		pfi_department_name = d['Department']
+
+		# create the department dictionary and add to data
+		department_node = {'name' : pfi_department_name, 'hovertext' : pfi_department_name, 'size' : 60, 'color' : 'red'}
+
+		if not department_node in data['nodes']:
+			data['nodes'].append(department_node)
+
 		# get the name and the capital value of the project
-		pfi_project_name = d['Project Name'] + ' - [ £' + str(d['Capital Value (£m)']) + 'm ]' + ' %s' % d['Department']
+		pfi_project_name = d['Project Name'] + ' - [ £' + str(d['Capital Value (£m)']) + 'm ]'
 
 		# create the node dictionary and add to data
-		project_node = {'name' : '', 'hovertext' : pfi_project_name, 'size' : 20, 'color' : 'yellow'}
+		project_node = {'name' : '', 'hovertext' : pfi_project_name, 'size' : 20, 'color' : 'orange'}
 		data['nodes'].append(project_node)
+
+		# link the project and department
+		link = make_link({}, data['nodes'], project_node, department_node)
+		data['links'].append(link)
 
 		# potentially six equity partners
 		for num in ['1', '2', '3', '4', '5', '6']:
@@ -75,7 +88,7 @@ def prepare_plot_data(parsed_data):
 
 					# create the equity partner node dictionary
 					equity_name = d[equity_partner]
-	                partner_node = {'name' : '', 'hovertext' : equity_name, 'size' : 10, 'color' : 'red'}
+	                partner_node = {'name' : '', 'hovertext' : equity_name, 'size' : 10, 'color' : 'yellow'}
 
 	                # lets check they dont already exist
 	                found = partner_node
@@ -92,6 +105,7 @@ def prepare_plot_data(parsed_data):
 	                link = make_link({}, data['nodes'], project_node, found)
 	                if link not in data['links']:
 	                	data['links'].append(link)
+
 	return data
 
 data_dicts = data_to_dict()
