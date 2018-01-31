@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import csv, sys
+import csv, sys, shutil
 from fuzzywuzzy import fuzz
 
 sys.path.append('../lib/python')
@@ -9,6 +9,10 @@ from graphs import plot_data_to_file
 # data source
 current_data = '../data/31.03.2016.csv'
 hyperlink = 'https://www.gov.uk/government/publications/private-finance-initiative-and-private-finance-2-projects-2016-summary-data'
+
+# html paths
+html_file = '../index.html'
+plot_file = '../data/plot_data.json'
 
 def make_link(link, nodes, source, target):
     """
@@ -57,12 +61,25 @@ def prepare_plot_data(parsed_data):
 
 	for d in parsed_data:
 
+		# get the department name
+		pfi_department_name = d['Department']
+
+		# create the department dictionary and add to data
+		department_node = {'name' : pfi_department_name, 'hovertext' : pfi_department_name, 'size' : 60, 'color' : 'red', 'type': 'department'}
+
+		if not department_node in data['nodes']:
+			data['nodes'].append(department_node)
+
 		# get the name and the capital value of the project
-		pfi_project_name = d['Project Name'] + ' - [ £' + str(d['Capital Value (£m)']) + 'm ]' + ' %s' % d['Department']
+		pfi_project_name = d['Project Name'] + ' - [ £' + str(d['Capital Value (£m)']) + 'm ]'
 
 		# create the node dictionary and add to data
-		project_node = {'name' : '', 'hovertext' : pfi_project_name, 'size' : 20, 'color' : 'yellow'}
+		project_node = {'name' : '', 'hovertext' : pfi_project_name, 'size' : 20, 'color' : 'orange', 'type' : 'project'}
 		data['nodes'].append(project_node)
+
+		# link the project and department
+		link = make_link({}, data['nodes'], project_node, department_node)
+		data['links'].append(link)
 
 		# potentially six equity partners
 		for num in ['1', '2', '3', '4', '5', '6']:
@@ -75,7 +92,7 @@ def prepare_plot_data(parsed_data):
 
 					# create the equity partner node dictionary
 					equity_name = d[equity_partner]
-	                partner_node = {'name' : '', 'hovertext' : equity_name, 'size' : 10, 'color' : 'red'}
+	                partner_node = {'name' : '', 'hovertext' : equity_name, 'size' : 10, 'color' : 'yellow', 'type' : 'partner'}
 
 	                # lets check they dont already exist
 	                found = partner_node
@@ -92,9 +109,34 @@ def prepare_plot_data(parsed_data):
 	                link = make_link({}, data['nodes'], project_node, found)
 	                if link not in data['links']:
 	                	data['links'].append(link)
+
+	# add a unique id
+	node_id = 0
+	for node in data['nodes']:
+		node['node_id'] = node_id
+		node_id += 1
+
 	return data
+
+def write_file(html):
+	"""
+	write out the index.html file
+	"""
+
+	# copy the top
+	shutil.copy2(top_html, html_file)
+
+	# insert the plot div
+	with open(html_file, "a") as myfile:
+		myfile.write(html.encode("utf8"))
+
+	# write the tail
+	with open(html_file, "a") as fo:
+		with open(tail_html, 'r') as fi:
+			fo.write(fi.read())
 
 data_dicts = data_to_dict()
 plot_data = prepare_plot_data(data_dicts)
-plot_data_to_file(plot_data, hyperlink)
+html = plot_data_to_file(plot_data, plot_file, hyperlink)
 
+shutil.copy2('../lib/html/index.html', '../index.html')
