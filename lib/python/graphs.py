@@ -28,6 +28,8 @@ def plot_data_to_file(data, plot_file, hyperlink):
 		node_size = []
 		node_name = []
 		node_hovertext = []
+		node_id = []
+		node_type = []
 
 		for node in data['nodes']:
 			nn = node['name'].replace('_', ' ')
@@ -36,6 +38,8 @@ def plot_data_to_file(data, plot_file, hyperlink):
 			node_color.append(node['color'])
 			node_size.append(node['size'])
 			node_hovertext.append(node['hovertext'])
+			node_id.append(node['node_id'])
+			node_type.append(node['type'])
 
 		# create a Kamada-Kawai layout
 		layout_type = 'drl_3d'
@@ -82,7 +86,8 @@ def plot_data_to_file(data, plot_file, hyperlink):
 		               textposition='middle',
 		               hoverinfo = 'text',
 		               hovertext = node_hovertext,
-		               hoverlabel = {'bgcolor': node_color},		               
+		               hoverlabel = {'bgcolor': node_color},
+		               customdata = node_id,
 		               textfont=Font(size=12)
 		               )
 		traces.append(trace2_2d)
